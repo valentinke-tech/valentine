@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Для Дашули 💖</title>
+    <style>
+        body {
+            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .card {
+            background: white;
+            padding: 24px;
+            border-radius: 24px;
+            text-align: center;
+            width: 90%;
+            max-width: 360px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            animation: popIn 0.8s ease;
+        }
+
+        @keyframes popIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .buttons {
+            position: relative;
+            height: 70px;
+            margin-top: 10px;
+        }
+
+        button {
+            padding: 14px 26px;
+            border-radius: 999px;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        #yesBtn {
+            background: linear-gradient(135deg, #ff4b8b, #ff6fb1);
+            color: white;
+            box-shadow: 0 6px 15px rgba(255, 75, 139, 0.4);
+        }
+
+        #noBtn {
+            position: absolute;
+            left: 180px;
+            background: #e0e0e0;
+        }
+
+        #gif {
+            display: none;
+            margin-top: 20px;
+            width: 100%;
+            border-radius: 16px;
+            animation: fadeIn 0.8s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            display: none;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: -20px;
+            font-size: 20px;
+            animation: floatUp 4s linear forwards;
+            opacity: 0.8;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 0.8;
+            }
+
+            100% {
+                transform: translateY(-110vh) scale(1.5);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Дашуля, будешь моей валентинкой? 💖</h2>
+
+        <div class="buttons">
+            <button id="yesBtn">Yes 💕</button>
+            <button id="noBtn">No 🙈</button>
+        </div>
+
+        <img id="gif" src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Love GIF">
+    </div>
+
+    <div class="hearts" id="hearts"></div>
+
+    <!-- Звуки -->
+    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-29.mp3"></audio>
+    <audio id="loveSound" src="https://www.soundjay.com/human/sounds/cheer-01.mp3"></audio>
+
+    <script>
+        const noBtn = document.getElementById("noBtn");
+        const yesBtn = document.getElementById("yesBtn");
+        const gif = document.getElementById("gif");
+        const buttons = document.querySelector(".buttons");
+        const heartsContainer = document.getElementById("hearts");
+        const clickSound = document.getElementById("clickSound");
+        const loveSound = document.getElementById("loveSound");
+
+        function moveButton() {
+            clickSound.currentTime = 0;
+            clickSound.play();
+
+            const maxX = buttons.offsetWidth - noBtn.offsetWidth;
+            const maxY = buttons.offsetHeight - noBtn.offsetHeight;
+
+            const x = Math.random() * maxX;
+            const y = Math.random() * maxY;
+
+            noBtn.style.left = x + "px";
+            noBtn.style.top = y + "px";
+        }
+
+        noBtn.addEventListener("mouseenter", moveButton);
+        noBtn.addEventListener("touchstart", moveButton);
+
+        yesBtn.addEventListener("click", () => {
+            loveSound.currentTime = 0;
+            loveSound.play();
+
+            buttons.style.display = "none";
+            gif.style.display = "block";
+            heartsContainer.style.display = "block";
+
+            for (let i = 0; i < 30; i++) {
+                createHeart();
+            }
+        });
+
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.textContent = "💖";
