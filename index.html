@@ -22,6 +22,7 @@
       text-align:center;
       position:relative;
       overflow:hidden;
+      z-index: 1;
     }
     h1{ margin:0 0 14px; font-size: clamp(22px, 4.2vw, 34px); }
     p{ margin:0 0 18px; opacity:.85; }
@@ -37,6 +38,8 @@
       font-size: 16px;
       transition: transform .12s ease, filter .12s ease;
       user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
     }
     button:active{ transform: scale(.98); }
     #yes{
@@ -79,9 +82,20 @@
     .arena { position:relative; height: 170px; margin-top: 8px; }
     .arena .btns { position:absolute; left:0; right:0; top:0; }
     .arena.moving #no { position:absolute; }
+
+    /* Confetti canvas */
+    #confetti {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 999;
+    }
   </style>
 </head>
 <body>
+
+  <canvas id="confetti"></canvas>
+
   <div class="card">
     <div class="hearts"></div>
 
@@ -98,7 +112,6 @@
     <div class="hint" id="hint"></div>
 
     <div class="gifWrap" id="gifWrap">
-      <!-- Можешь заменить GIF на любую другую (см. ниже как) -->
       <img id="gif" alt="gif"
         src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
     </div>
@@ -114,14 +127,16 @@
     const arena = document.getElementById('arena');
     const btns = document.getElementById('btns');
 
-    // Остроумные ответы на "Нет"
+    // Мемные ответы на "Нет"
     const lines = [
-      "Хм… кнопка «Нет» сегодня на больничном 🤒",
-      "Ты уверена? Она кажется сама не уверена 😅",
-      "Система распознала: «Нет» = «Да» (почти) 👀",
-      "А давай сделаем вид, что ты промахнулась 🙂",
-      "Ой, «Нет» убежало. Стыдно ему просто!",
-      "Дашуля, ну это же валентинка! 💘"
+      "Ошибка 404: «Нет» не найдено",
+      "Ты серьёзно сейчас? 😐",
+      "АХАХ, не в этот раз",
+      "Кнопка «Нет» ушла за хлебом",
+      "Попытка засчитана, но нет",
+      "Система считает это «Да»",
+      "Ну ты чего 😄",
+      "Слишком поздно отказаться"
     ];
 
     let noClicks = 0;
@@ -133,7 +148,6 @@
     function moveNoButton(){
       arena.classList.add('moving');
 
-      // Границы для перемещения внутри arena
       const a = arena.getBoundingClientRect();
       const b = no.getBoundingClientRect();
 
@@ -144,7 +158,6 @@
       const x = rand(padding, maxX);
       const y = rand(padding, maxY);
 
-      // Поставим кнопку "Нет" абсолютом внутри arena
       no.style.left = x + "px";
       no.style.top  = y + "px";
     }
@@ -153,45 +166,122 @@
       hint.textContent = lines[rand(0, lines.length - 1)];
     }
 
-    // При наведении/попытке нажать "Нет" — убегаем
     const scare = () => {
       noClicks++;
       setHint();
       moveNoButton();
 
-      // Чем больше пытается нажать "Нет", тем больше растёт "Да" (мемный эффект)
-      const scale = Math.min(1 + noClicks * 0.06, 1.6);
+      // мем-эффекты
+      const scale = Math.min(1 + noClicks * 0.08, 1.8);
       yes.style.transform = `scale(${scale})`;
+
+      if (navigator.vibrate) navigator.vibrate(40);
+
+      // после 5 попыток "Нет" начинает сдаваться
+      if (noClicks === 5) {
+        no.textContent = "Ладно, ДА 😳";
+        no.style.background = "#ff3b7a";
+        no.style.color = "white";
+      }
     };
 
+    // ПК — курсор
     no.addEventListener('mouseenter', scare);
 
-// Телефон — попытка нажать
+    // Телефон — палец почти нажал 😈
     no.addEventListener('touchstart', (e) => {
-    e.preventDefault(); // чтобы не успели нажать
-    scare();
-      }, { passive: false });
+      e.preventDefault();
+      scare();
+    }, { passive: false });
 
-    // На всякий случай — если всё-таки кликнули
+    // Если каким-то чудом кликнули
     no.addEventListener('click', (e) => {
-    e.preventDefault();
-    scare();
+      e.preventDefault();
+      scare();
     });
-    // При "Да" показываем гифку
+
+    // ===== Confetti (без библиотек) =====
+    const canvas = document.getElementById('confetti');
+    const ctx = canvas.getContext('2d');
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    resizeCanvas();
+    window.addEventListener('resize', resizeCanvas);
+
+    function launchConfetti(durationMs = 1800) {
+      const pieces = [];
+      const count = 180;
+      const colors = ['#ff3b7a', '#ffd166', '#06d6a0', '#118ab2', '#8338ec'];
+
+      for (let i = 0; i < count; i++) {
+        pieces.push({
+          x: canvas.width / 2,
+          y: canvas.height / 2,
+          w: Math.random() * 10 + 6,
+          h: Math.random() * 6 + 4,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          vx: (Math.random() * 10 - 5),
+          vy: (Math.random() * -12 - 6),
+          rot: Math.random() * Math.PI,
+          vr: (Math.random() * 0.25 - 0.125),
+          g: 0.35,
+          life: Math.random() * 30 + 60
+        });
+      }
+
+      const start = performance.now();
+
+      function frame(now) {
+        const t = now - start;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        for (const p of pieces) {
+          p.vy += p.g;
+          p.x += p.vx;
+          p.y += p.vy;
+          p.rot += p.vr;
+          p.life -= 1;
+
+          ctx.save();
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
+          ctx.restore();
+        }
+
+        // убираем "умершие" частицы
+        for (let i = pieces.length - 1; i >= 0; i--) {
+          if (pieces[i].life <= 0 || pieces[i].y > canvas.height + 40) pieces.splice(i, 1);
+        }
+
+        if (t < durationMs && pieces.length > 0) {
+          requestAnimationFrame(frame);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+      }
+
+      requestAnimationFrame(frame);
+    }
+
+    // ===== При "Да" =====
     yes.addEventListener('click', () => {
       hint.textContent = "УРААА! 💖💖💖";
+      launchConfetti(2000);
       gifWrap.style.display = "block";
-      // Заморозим арену и уберём "убегание"
+
+      // выключаем арену
       arena.classList.remove('moving');
       no.style.position = "";
       no.style.left = "";
       no.style.top = "";
-      btns.style.position = "";
-      // Можно спрятать кнопки:
       btns.style.display = "none";
     });
 
-    // Первичная подсказка
     hint.textContent = "Нажми «Да» 🙂";
   </script>
 </body>
