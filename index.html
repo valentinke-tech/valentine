@@ -165,11 +165,18 @@
     };
 
     no.addEventListener('mouseenter', scare);
-    no.addEventListener('click', (e) => {
-      e.preventDefault();
-      scare();
-    });
 
+// Телефон — попытка нажать
+    no.addEventListener('touchstart', (e) => {
+    e.preventDefault(); // чтобы не успели нажать
+    scare();
+      }, { passive: false });
+
+    // На всякий случай — если всё-таки кликнули
+    no.addEventListener('click', (e) => {
+    e.preventDefault();
+    scare();
+    });
     // При "Да" показываем гифку
     yes.addEventListener('click', () => {
       hint.textContent = "УРААА! 💖💖💖";
