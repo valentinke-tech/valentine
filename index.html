@@ -14,7 +14,7 @@
     }
     .card{
       width:min(560px, 92vw);
-      background: rgba(255,255,255,.8);
+      background: rgba(255,255,255,.85);
       backdrop-filter: blur(8px);
       border-radius: 24px;
       padding: 28px 22px;
@@ -26,6 +26,7 @@
     }
     h1{ margin:0 0 14px; font-size: clamp(22px, 4.2vw, 34px); }
     p{ margin:0 0 18px; opacity:.85; }
+
     .btns{
       display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
       margin-top: 10px;
@@ -36,12 +37,13 @@
       border-radius: 999px;
       font-weight: 700;
       font-size: 16px;
-      transition: transform .12s ease, filter .12s ease;
+      transition: transform .12s ease;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
       touch-action: manipulation;
     }
     button:active{ transform: scale(.98); }
+
     #yes{
       background: #ff3b7a;
       color:white;
@@ -51,10 +53,22 @@
       background: #ececec;
       color:#333;
     }
+
     .hint{
       margin-top:14px; min-height: 24px;
       font-size: 14px; opacity:.85;
     }
+
+    .win{
+      display:none;
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:16px;
+      background: rgba(255,59,122,.12);
+      border:1px solid rgba(255,59,122,.25);
+      font-weight:700;
+    }
+
     .gifWrap{
       display:none;
       margin-top:18px;
@@ -63,11 +77,13 @@
       box-shadow: 0 12px 28px rgba(0,0,0,.14);
     }
     .gifWrap img{ width:100%; height:auto; display:block; }
+
     .small{
       margin-top:14px;
       font-size: 12px;
       opacity:.6;
     }
+
     .hearts{
       position:absolute; inset:0; pointer-events:none; opacity:.35;
       background:
@@ -75,214 +91,139 @@
         radial-gradient(circle at 90% 20%, #ff3b7a 0 2px, transparent 3px),
         radial-gradient(circle at 30% 80%, #ff3b7a 0 2px, transparent 3px),
         radial-gradient(circle at 70% 70%, #ff3b7a 0 2px, transparent 3px);
-      filter: blur(.2px);
     }
 
-    /* Для "убегающей" кнопки */
-    .arena { position:relative; height: 170px; margin-top: 8px; }
-    .arena .btns { position:absolute; left:0; right:0; top:0; }
-    .arena.moving #no { position:absolute; }
+    .arena{ position:relative; height:170px; margin-top:8px; }
+    .arena .btns{ position:absolute; left:0; right:0; top:0; }
+    .arena.moving #no{ position:absolute; }
 
-    /* Confetti canvas */
-    #confetti {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 999;
+    #confetti{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:999;
     }
   </style>
 </head>
 <body>
 
-  <canvas id="confetti"></canvas>
+<canvas id="confetti"></canvas>
 
-  <div class="card">
-    <div class="hearts"></div>
+<div class="card">
+  <div class="hearts"></div>
 
-    <h1>Дашуля, будешь ли моей валентинкой? 💘</h1>
-    <p>Шаришь 💖</p>
+  <h1>Дашуля, будешь ли моей валентинкой? 💘</h1>
+  <p>Шаришь 💖</p>
 
-    <div class="arena" id="arena">
-      <div class="btns" id="btns">
-        <button id="yes">Да 💖</button>
-        <button id="no">Нет 🙃</button>
-      </div>
+  <div class="arena" id="arena">
+    <div class="btns" id="btns">
+      <button id="yes">Да 💖</button>
+      <button id="no">Нет 🙃</button>
     </div>
-
-    <div class="hint" id="hint"></div>
-
-    <div class="gifWrap" id="gifWrap">
-      <img id="gif" alt="gif"
-        src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif">
-    </div>
-
-    <div class="small">P.S. Кнопка «Нет» может вести себя подозрительно 😄</div>
   </div>
 
-  <script>
-    const yes = document.getElementById('yes');
-    const no = document.getElementById('no');
-    const hint = document.getElementById('hint');
-    const gifWrap = document.getElementById('gifWrap');
-    const arena = document.getElementById('arena');
-    const btns = document.getElementById('btns');
+  <div class="hint" id="hint"></div>
+  <div class="win" id="win">✅ Принято. Ты официально моя валентинка 😎💘</div>
 
-    // Мемные ответы на "Нет"
-    const lines = [
-      "Ошибка 404: «Нет» не найдено",
-      "Ты серьёзно сейчас? 😐",
-      "АХАХ, не в этот раз",
-      "Кнопка «Нет» ушла за хлебом",
-      "Попытка засчитана, но нет",
-      "Система считает это «Да»",
-      "Ну ты чего 😄",
-      "Слишком поздно отказаться"
-    ];
+  <div class="gifWrap" id="gifWrap">
+    <img src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="gif">
+  </div>
 
-    let noClicks = 0;
+  <div class="small">P.S. Кнопка «Нет» может вести себя подозрительно 😄</div>
+</div>
 
-    function rand(min, max){
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+<script>
+const yes = document.getElementById('yes');
+const no = document.getElementById('no');
+const hint = document.getElementById('hint');
+const gifWrap = document.getElementById('gifWrap');
+const arena = document.getElementById('arena');
+const btns = document.getElementById('btns');
+const win = document.getElementById('win');
 
-    function moveNoButton(){
-      arena.classList.add('moving');
+// Мемные ответы
+const lines = [
+  "Ошибка 404: «Нет» не найдено",
+  "Ты серьёзно сейчас? 😐",
+  "АХАХ, не в этот раз",
+  "Кнопка «Нет» ушла за хлебом",
+  "Попытка засчитана, но нет",
+  "Система считает это «Да»",
+  "Ну ты чего 😄",
+  "Слишком поздно отказаться"
+];
 
-      const a = arena.getBoundingClientRect();
-      const b = no.getBoundingClientRect();
+let noClicks = 0;
+const rand = (a,b)=>Math.floor(Math.random()*(b-a+1))+a;
 
-      const padding = 10;
-      const maxX = Math.max(padding, (a.width - b.width - padding));
-      const maxY = Math.max(padding, (a.height - b.height - padding));
+function moveNo(){
+  arena.classList.add('moving');
+  const a = arena.getBoundingClientRect();
+  const b = no.getBoundingClientRect();
+  no.style.left = rand(10, a.width - b.width - 10) + "px";
+  no.style.top  = rand(10, a.height - b.height - 10) + "px";
+}
 
-      const x = rand(padding, maxX);
-      const y = rand(padding, maxY);
+function scare(){
+  noClicks++;
+  hint.textContent = lines[rand(0, lines.length-1)];
+  moveNo();
 
-      no.style.left = x + "px";
-      no.style.top  = y + "px";
-    }
+  yes.style.transform = `scale(${Math.min(1+noClicks*0.08,1.8)})`;
+  if (navigator.vibrate) navigator.vibrate(40);
 
-    function setHint(){
-      hint.textContent = lines[rand(0, lines.length - 1)];
-    }
+  if (noClicks === 5){
+    no.textContent = "Ладно, ДА 😳";
+    no.style.background = "#ff3b7a";
+    no.style.color = "#fff";
+  }
+}
 
-    const scare = () => {
-      noClicks++;
-      setHint();
-      moveNoButton();
+no.addEventListener('mouseenter', scare);
+no.addEventListener('touchstart', e => { e.preventDefault(); scare(); }, {passive:false});
+no.addEventListener('click', e => { e.preventDefault(); scare(); });
 
-      // мем-эффекты
-      const scale = Math.min(1 + noClicks * 0.08, 1.8);
-      yes.style.transform = `scale(${scale})`;
+// CONFETTI
+const canvas = document.getElementById('confetti');
+const ctx = canvas.getContext('2d');
+function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+resize(); addEventListener('resize', resize);
 
-      if (navigator.vibrate) navigator.vibrate(40);
-
-      // после 5 попыток "Нет" начинает сдаваться
-      if (noClicks === 5) {
-        no.textContent = "Ладно, ДА 😳";
-        no.style.background = "#ff3b7a";
-        no.style.color = "white";
-      }
-    };
-
-    // ПК — курсор
-    no.addEventListener('mouseenter', scare);
-
-    // Телефон — палец почти нажал 😈
-    no.addEventListener('touchstart', (e) => {
-      e.preventDefault();
-      scare();
-    }, { passive: false });
-
-    // Если каким-то чудом кликнули
-    no.addEventListener('click', (e) => {
-      e.preventDefault();
-      scare();
+function confetti(){
+  const parts=[];
+  for(let i=0;i<180;i++){
+    parts.push({
+      x:canvas.width/2, y:canvas.height/2,
+      vx:(Math.random()*10-5), vy:(Math.random()*-12-6),
+      w:8,h:4, g:0.35,
+      c:['#ff3b7a','#ffd166','#06d6a0','#118ab2','#8338ec'][rand(0,4)],
+      life:rand(60,100)
     });
-
-    // ===== Confetti (без библиотек) =====
-    const canvas = document.getElementById('confetti');
-    const ctx = canvas.getContext('2d');
-
-    function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    }
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
-
-    function launchConfetti(durationMs = 1800) {
-      const pieces = [];
-      const count = 180;
-      const colors = ['#ff3b7a', '#ffd166', '#06d6a0', '#118ab2', '#8338ec'];
-
-      for (let i = 0; i < count; i++) {
-        pieces.push({
-          x: canvas.width / 2,
-          y: canvas.height / 2,
-          w: Math.random() * 10 + 6,
-          h: Math.random() * 6 + 4,
-          color: colors[Math.floor(Math.random() * colors.length)],
-          vx: (Math.random() * 10 - 5),
-          vy: (Math.random() * -12 - 6),
-          rot: Math.random() * Math.PI,
-          vr: (Math.random() * 0.25 - 0.125),
-          g: 0.35,
-          life: Math.random() * 30 + 60
-        });
-      }
-
-      const start = performance.now();
-
-      function frame(now) {
-        const t = now - start;
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        for (const p of pieces) {
-          p.vy += p.g;
-          p.x += p.vx;
-          p.y += p.vy;
-          p.rot += p.vr;
-          p.life -= 1;
-
-          ctx.save();
-          ctx.translate(p.x, p.y);
-          ctx.rotate(p.rot);
-          ctx.fillStyle = p.color;
-          ctx.fillRect(-p.w/2, -p.h/2, p.w, p.h);
-          ctx.restore();
-        }
-
-        // убираем "умершие" частицы
-        for (let i = pieces.length - 1; i >= 0; i--) {
-          if (pieces[i].life <= 0 || pieces[i].y > canvas.height + 40) pieces.splice(i, 1);
-        }
-
-        if (t < durationMs && pieces.length > 0) {
-          requestAnimationFrame(frame);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-
-      requestAnimationFrame(frame);
-    }
-
-    // ===== При "Да" =====
-    yes.addEventListener('click', () => {
-      hint.textContent = "УРААА! 💖💖💖";
-      launchConfetti(2000);
-      gifWrap.style.display = "block";
-
-      // выключаем арену
-      arena.classList.remove('moving');
-      no.style.position = "";
-      no.style.left = "";
-      no.style.top = "";
-      btns.style.display = "none";
+  }
+  function frame(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.vy+=p.g; p.x+=p.vx; p.y+=p.vy; p.life--;
+      ctx.fillStyle=p.c;
+      ctx.fillRect(p.x,p.y,p.w,p.h);
     });
+    for(let i=parts.length-1;i>=0;i--) if(parts[i].life<=0) parts.splice(i,1);
+    if(parts.length) requestAnimationFrame(frame);
+  }
+  frame();
+}
 
-    hint.textContent = "Нажми «Да» 🙂";
-  </script>
+yes.addEventListener('click', ()=>{
+  hint.textContent="УРААА! 💖💖💖";
+  confetti();
+  gifWrap.style.display="block";
+  win.style.display="block";
+  arena.style.display="none";
+  btns.style.display="none";
+});
+
+hint.textContent="Нажми «Да» 🙂";
+</script>
+
 </body>
 </html>
