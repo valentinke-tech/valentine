@@ -1,189 +1,191 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
-
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Для Дашули 💖</title>
-    <style>
-        body {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: "Segoe UI", sans-serif;
-            margin: 0;
-            overflow: hidden;
-        }
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Валентинка для Дашули</title>
+  <style>
+    :root { --bg1:#ffeff6; --bg2:#ffe3ee; --text:#2b2b2b; }
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      background: radial-gradient(circle at top, var(--bg1), var(--bg2));
+      color:var(--text);
+    }
+    .card{
+      width:min(560px, 92vw);
+      background: rgba(255,255,255,.8);
+      backdrop-filter: blur(8px);
+      border-radius: 24px;
+      padding: 28px 22px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.12);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+    }
+    h1{ margin:0 0 14px; font-size: clamp(22px, 4.2vw, 34px); }
+    p{ margin:0 0 18px; opacity:.85; }
+    .btns{
+      display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+      margin-top: 10px;
+    }
+    button{
+      border:0; cursor:pointer;
+      padding: 12px 18px;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 16px;
+      transition: transform .12s ease, filter .12s ease;
+      user-select:none;
+    }
+    button:active{ transform: scale(.98); }
+    #yes{
+      background: #ff3b7a;
+      color:white;
+      box-shadow: 0 10px 18px rgba(255,59,122,.25);
+    }
+    #no{
+      background: #ececec;
+      color:#333;
+    }
+    .hint{
+      margin-top:14px; min-height: 24px;
+      font-size: 14px; opacity:.85;
+    }
+    .gifWrap{
+      display:none;
+      margin-top:18px;
+      border-radius: 18px;
+      overflow:hidden;
+      box-shadow: 0 12px 28px rgba(0,0,0,.14);
+    }
+    .gifWrap img{ width:100%; height:auto; display:block; }
+    .small{
+      margin-top:14px;
+      font-size: 12px;
+      opacity:.6;
+    }
+    .hearts{
+      position:absolute; inset:0; pointer-events:none; opacity:.35;
+      background:
+        radial-gradient(circle at 10% 10%, #ff3b7a 0 2px, transparent 3px),
+        radial-gradient(circle at 90% 20%, #ff3b7a 0 2px, transparent 3px),
+        radial-gradient(circle at 30% 80%, #ff3b7a 0 2px, transparent 3px),
+        radial-gradient(circle at 70% 70%, #ff3b7a 0 2px, transparent 3px);
+      filter: blur(.2px);
+    }
 
-        .card {
-            background: white;
-            padding: 24px;
-            border-radius: 24px;
-            text-align: center;
-            width: 90%;
-            max-width: 360px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-            animation: popIn 0.8s ease;
-        }
-
-        @keyframes popIn {
-            from {
-                transform: scale(0.8);
-                opacity: 0;
-            }
-
-            to {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        h2 {
-            margin-bottom: 20px;
-        }
-
-        .buttons {
-            position: relative;
-            height: 70px;
-            margin-top: 10px;
-        }
-
-        button {
-            padding: 14px 26px;
-            border-radius: 999px;
-            border: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-        }
-
-        button:active {
-            transform: scale(0.95);
-        }
-
-        #yesBtn {
-            background: linear-gradient(135deg, #ff4b8b, #ff6fb1);
-            color: white;
-            box-shadow: 0 6px 15px rgba(255, 75, 139, 0.4);
-        }
-
-        #noBtn {
-            position: absolute;
-            left: 180px;
-            background: #e0e0e0;
-        }
-
-        #gif {
-            display: none;
-            margin-top: 20px;
-            width: 100%;
-            border-radius: 16px;
-            animation: fadeIn 0.8s ease forwards;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .hearts {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            overflow: hidden;
-            display: none;
-        }
-
-        .heart {
-            position: absolute;
-            bottom: -20px;
-            font-size: 20px;
-            animation: floatUp 4s linear forwards;
-            opacity: 0.8;
-        }
-
-        @keyframes floatUp {
-            0% {
-                transform: translateY(0) scale(1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: translateY(-110vh) scale(1.5);
-                opacity: 0;
-            }
-        }
-    </style>
+    /* Для "убегающей" кнопки */
+    .arena { position:relative; height: 170px; margin-top: 8px; }
+    .arena .btns { position:absolute; left:0; right:0; top:0; }
+    .arena.moving #no { position:absolute; }
+  </style>
 </head>
-
 <body>
+  <div class="card">
+    <div class="hearts"></div>
 
-    <div class="card">
-        <h2>Дашуля, будешь моей валентинкой? 💖</h2>
+    <h1>Дашуля, будешь ли моей валентинкой? 💘</h1>
+    <p>Шаришь 💖</p>
 
-        <div class="buttons">
-            <button id="yesBtn">Yes 💕</button>
-            <button id="noBtn">No 🙈</button>
-        </div>
-
-        <img id="gif" src="https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif" alt="Love GIF">
+    <div class="arena" id="arena">
+      <div class="btns" id="btns">
+        <button id="yes">Да 💖</button>
+        <button id="no">Нет 🙃</button>
+      </div>
     </div>
 
-    <div class="hearts" id="hearts"></div>
+    <div class="hint" id="hint"></div>
 
-    <!-- Звуки -->
-    <audio id="clickSound" src="https://www.soundjay.com/buttons/sounds/button-29.mp3"></audio>
-    <audio id="loveSound" src="https://www.soundjay.com/human/sounds/cheer-01.mp3"></audio>
+    <div class="gifWrap" id="gifWrap">
+      <!-- Можешь заменить GIF на любую другую (см. ниже как) -->
+      <img id="gif" alt="gif"
+        src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbHh1bW9rZ2FiN2J5bGk3b2R2eXYzZ3h4d2w3d3M4Z3l0d2l2bSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3o6Zt481isNVuQI1l6/giphy.gif">
+    </div>
 
-    <script>
-        const noBtn = document.getElementById("noBtn");
-        const yesBtn = document.getElementById("yesBtn");
-        const gif = document.getElementById("gif");
-        const buttons = document.querySelector(".buttons");
-        const heartsContainer = document.getElementById("hearts");
-        const clickSound = document.getElementById("clickSound");
-        const loveSound = document.getElementById("loveSound");
+    <div class="small">P.S. Кнопка «Нет» может вести себя подозрительно 😄</div>
+  </div>
 
-        function moveButton() {
-            clickSound.currentTime = 0;
-            clickSound.play();
+  <script>
+    const yes = document.getElementById('yes');
+    const no = document.getElementById('no');
+    const hint = document.getElementById('hint');
+    const gifWrap = document.getElementById('gifWrap');
+    const arena = document.getElementById('arena');
+    const btns = document.getElementById('btns');
 
-            const maxX = buttons.offsetWidth - noBtn.offsetWidth;
-            const maxY = buttons.offsetHeight - noBtn.offsetHeight;
+    // Остроумные ответы на "Нет"
+    const lines = [
+      "Хм… кнопка «Нет» сегодня на больничном 🤒",
+      "Ты уверена? Она кажется сама не уверена 😅",
+      "Система распознала: «Нет» = «Да» (почти) 👀",
+      "А давай сделаем вид, что ты промахнулась 🙂",
+      "Ой, «Нет» убежало. Стыдно ему просто!",
+      "Дашуля, ну это же валентинка! 💘"
+    ];
 
-            const x = Math.random() * maxX;
-            const y = Math.random() * maxY;
+    let noClicks = 0;
 
-            noBtn.style.left = x + "px";
-            noBtn.style.top = y + "px";
-        }
+    function rand(min, max){
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
 
-        noBtn.addEventListener("mouseenter", moveButton);
-        noBtn.addEventListener("touchstart", moveButton);
+    function moveNoButton(){
+      arena.classList.add('moving');
 
-        yesBtn.addEventListener("click", () => {
-            loveSound.currentTime = 0;
-            loveSound.play();
+      // Границы для перемещения внутри arena
+      const a = arena.getBoundingClientRect();
+      const b = no.getBoundingClientRect();
 
-            buttons.style.display = "none";
-            gif.style.display = "block";
-            heartsContainer.style.display = "block";
+      const padding = 10;
+      const maxX = Math.max(padding, (a.width - b.width - padding));
+      const maxY = Math.max(padding, (a.height - b.height - padding));
 
-            for (let i = 0; i < 30; i++) {
-                createHeart();
-            }
-        });
+      const x = rand(padding, maxX);
+      const y = rand(padding, maxY);
 
-        function createHeart() {
-            const heart = document.createElement("div");
-            heart.classList.add("heart");
-            heart.textContent = "💖";
+      // Поставим кнопку "Нет" абсолютом внутри arena
+      no.style.left = x + "px";
+      no.style.top  = y + "px";
+    }
+
+    function setHint(){
+      hint.textContent = lines[rand(0, lines.length - 1)];
+    }
+
+    // При наведении/попытке нажать "Нет" — убегаем
+    const scare = () => {
+      noClicks++;
+      setHint();
+      moveNoButton();
+
+      // Чем больше пытается нажать "Нет", тем больше растёт "Да" (мемный эффект)
+      const scale = Math.min(1 + noClicks * 0.06, 1.6);
+      yes.style.transform = `scale(${scale})`;
+    };
+
+    no.addEventListener('mouseenter', scare);
+    no.addEventListener('click', (e) => {
+      e.preventDefault();
+      scare();
+    });
+
+    // При "Да" показываем гифку
+    yes.addEventListener('click', () => {
+      hint.textContent = "УРААА! 💖💖💖";
+      gifWrap.style.display = "block";
+      // Заморозим арену и уберём "убегание"
+      arena.classList.remove('moving');
+      no.style.position = "";
+      no.style.left = "";
+      no.style.top = "";
+      btns.style.position = "";
+      // Можно спрятать кнопки:
+      btns.style.display = "none";
+    });
+
+    // Первичная подсказка
+    hint.textContent = "Нажми «Да» 🙂";
+  </script>
+</body>
+</html>
